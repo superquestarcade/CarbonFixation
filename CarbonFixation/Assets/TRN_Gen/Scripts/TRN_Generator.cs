@@ -27,6 +27,9 @@ public class TRN_Generator : MonoBehaviour
     [SerializeField] private TRNDetaiTexture[] detailTextures;
     [HideInInspector] public bool spawnPrefabs = true;
 
+    private Vector2Int worldIndex = new Vector2Int(0, 0);
+    public Vector2Int WorldIndex => worldIndex;
+    
     Terrain terrain;
     float[,] heightMap;
 
@@ -355,6 +358,11 @@ public class TRN_Generator : MonoBehaviour
 
         terrain.terrainData.size = new Vector3(width - 1, height, width);
         terrain.terrainData.size = new Vector3(width, height, width);
+    }
+
+    public void SetWorldIndex(int _x, int _z)
+    {
+        worldIndex = new Vector2Int(_x, _z);
     }
 }
 
