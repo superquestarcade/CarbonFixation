@@ -364,6 +364,11 @@ public class TRN_Generator : MonoBehaviour
     {
         worldIndex = new Vector2Int(_x, _z);
     }
+
+    public void SetWorldIndex(Vector2Int _terrainIndex)
+    {
+        worldIndex = _terrainIndex;
+    }
 }
 
 public enum FilterType

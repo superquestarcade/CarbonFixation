@@ -20,7 +20,7 @@ namespace World
 
 			if (GUILayout.Button("Set Player At Start"))
 			{
-				worldManager.SetPlayerAtStart();
+				worldManager.SetPlayerOnTerrain();
 			}
 
 			EditorGUILayout.EndHorizontal();

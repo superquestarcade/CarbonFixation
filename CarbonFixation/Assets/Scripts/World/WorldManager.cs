@@ -4,42 +4,59 @@ using UnityEngine;
 
 namespace World
 {
-	public class WorldManager : MonoBehaviourPlus
+	public class WorldManager : MonoBehaviourSingleton<WorldManager>
 	{
 		[SerializeField] private TerrainManager terrainManager;
+		[SerializeField] private PointOfInterestGenerator poiGenerator;
 		[SerializeField] private PlayerCharacterController playerCharacterController;
 		[SerializeField] private Transform startingCameraRig;
+		
+		private System.Random worldGenRng;
 
 		private void Start()
 		{
+			worldGenRng = new System.Random(DateTime.Now.GetHashCode());
 			terrainManager.ClearTerrains();
 			terrainManager.LoadTerrains();
-			SetPlayerAtStart();
-			startingCameraRig.position = playerCharacterController.transform.position;
+			var playerStartPosition = new Vector2(playerCharacterController.transform.position.x, playerCharacterController.transform.position.z);
+			poiGenerator.GeneratePois(playerStartPosition, 100f, worldGenRng);
+			SetPlayerOnTerrain();
+			startingCameraRig.position = playerStartPosition;
 		}
 
-		public void SetPlayerAtStart()
+		public void SetPlayerOnTerrain()
 		{
-			var startPosition = new Vector2(playerCharacterController.transform.position.x, playerCharacterController.transform.position.z);
-			SetPlayerOnTerrain(startPosition);
+			var playerWorldPosition = playerCharacterController.transform.position;
+			var worldHeight = GetHeightAtWorldPosition(playerWorldPosition);
+			var positionOnTerrain = new Vector3(0, worldHeight, 0);
+			if (Application.isEditor && !Application.isPlaying)
+			{
+				// Code runs strictly when working in the scene editor view
+				playerCharacterController.transform.position = positionOnTerrain;
+				if(startingCameraRig!=null) startingCameraRig.position = playerCharacterController.transform.position;
+			}
+			else
+			{
+				playerCharacterController.Motor.SetPosition(positionOnTerrain);
+			}
+			
+			Debug.Log($"TerrainManager.SetPlayerOnTerrain: {positionOnTerrain}");
 		}
 
-		private void SetPlayerOnTerrain(Vector2 _positionOnTerrain)
+		public float GetHeightAtWorldPosition(Vector3 _positionOnTerrain)
 		{
 			var worldHeight = 0f;
-#if UNITY_EDITOR
-			worldHeight = terrainManager.EditorGetHeightAtPosition(_positionOnTerrain);
-#else
-			worldHeight = terrainManager.GetHeightAtPosition(_positionOnTerrain);
-#endif
-			var positionOnTerrain = new Vector3(0, worldHeight, 0);
-#if UNITY_EDITOR
-			playerCharacterController.transform.position = positionOnTerrain;
-			if(startingCameraRig!=null) startingCameraRig.position = playerCharacterController.transform.position;
-#else
-			playerCharacterController.Motor.SetPosition(positionOnTerrain);
-#endif
-			Debug.Log($"TerrainManager.SetPlayerOnTerrain: {positionOnTerrain}");
+			if (Application.isEditor && !Application.isPlaying)
+			{
+				// Code runs strictly when working in the scene editor view
+				worldHeight = terrainManager.EditorGetHeightAtPosition(_positionOnTerrain);
+			}
+			else
+			{
+				worldHeight = terrainManager.GetHeightAtPosition(_positionOnTerrain);
+			}
+			
+			return worldHeight;
 		}
 	}
 }
