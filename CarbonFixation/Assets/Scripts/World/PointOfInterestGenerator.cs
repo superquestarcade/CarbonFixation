@@ -6,6 +6,7 @@ namespace World
 {
 	public class PointOfInterestGenerator : MonoBehaviourPlus
 	{
+		[SerializeField] private Transform parentTransform;
 		[SerializeField] private float baseDistance = 10f;
 		[SerializeField] private float distanceVariance = 2f;
 		
@@ -18,27 +19,27 @@ namespace World
 		{
 			var ringCount = Mathf.FloorToInt(_radius / baseDistance);
 			var hexPoints = HexPointGenerator.GenerateHexPoints(ringCount, baseDistance, distanceVariance, _rng);
-			var originHex = WorldToHexPosition(_originPosition);
+			var originHex = HexPointGenerator.WorldToNearestHexPoint(_originPosition, baseDistance);
+			Debug.Log($"PointOfInterestGenerator.GeneratePoi originHex {originHex}, ringCount {ringCount}, hexPoints {hexPoints.Count}");
 			foreach (var hexPoint in hexPoints)
 			{
-				var worldHexPosition = originHex + new Vector3(hexPoint.x * baseDistance, 0, hexPoint.y * baseDistance);
+				var worldHexPosition = new Vector3(originHex.x + hexPoint.x, 0, originHex.y + hexPoint.y);
+				Debug.Log($"PointOfInterestGenerator.GeneratePoi hexPoint {hexPoint}, worldHexPosition {worldHexPosition}");
 				var heightAtPosition = WorldManager.singleton.GetHeightAtWorldPosition(worldHexPosition);
+				Debug.Log($"PointOfInterestGenerator.GeneratePoi hexPoint {hexPoint}, worldHexPosition {worldHexPosition}, heightAtPosition {heightAtPosition}");
 				worldHexPosition.y = heightAtPosition;
-				SpawnRandomPoi(originHex, _rng);
+				var poi = SpawnRandomPoi(worldHexPosition, _rng);
+				poi.gameObject.name = $"PointOfInterest ({hexPoint})";
 			}
 		}
 
-		private Vector3 WorldToHexPosition(Vector3 _position)
-		{
-			return new Vector3(Mathf.RoundToInt(_position.x/baseDistance)*baseDistance,0f, Mathf.RoundToInt(_position.z/baseDistance)*baseDistance);
-		}
-
-		private void SpawnRandomPoi(Vector3 _position, System.Random _rng)
+		private PointOfInterest SpawnRandomPoi(Vector3 _position, System.Random _rng)
 		{
 			var randomIndex = _rng.Next(0, poiGenDataSo.pointOfInterestGenData.Length);
 			var prefab = poiGenDataSo.pointOfInterestGenData[randomIndex].poiPrefab;
-			var poi = Instantiate(prefab, _position, Quaternion.identity);
+			var poi = Instantiate(prefab, _position, Quaternion.identity, parentTransform);
 			activePois.Add(poi);
+			return poi;
 		}
 	}
 }

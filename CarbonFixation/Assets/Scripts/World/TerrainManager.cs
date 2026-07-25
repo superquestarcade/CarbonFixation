@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -12,6 +13,8 @@ namespace World
 		private const string terrainParentName = "Terrain";
 		private Transform terrainParent;
 		private List<TRN_Generator> activeTerrains = new();
+		
+		private List<DebugTerrainInfo> debugTerrainInfos = new();
 
 		public void LoadTerrains()
 		{
@@ -48,20 +51,27 @@ namespace World
 			}
 		}
 
-		public float GetHeightAtPosition(Vector2 _position)
+		public float GetHeightAtPosition(Vector3 _position)
 		{
 			EnsureTerrainParent();
-			// Todo: I don't think the terrain index will be correct when the player moves off the first terrain. Double check this
 			var terrainIndex = WorldToTerrainIndex(_position);
-			Debug.Log($"TerrainManager.SetPlayerOnTerrain terrainIndex: {terrainIndex}");
+			Debug.Log($"TerrainManager.GetHeightAtPosition {_position}, terrainIndex: {terrainIndex}");
 			var terrainAtPosition = activeTerrains.First(_t => _t.WorldIndex == terrainIndex);
 			
 			if (terrainAtPosition == null)
 			{
-				Debug.LogError($"TerrainManager.SetPlayerOnTerrain: Can't find terrain at {_position}");
+				Debug.LogError($"TerrainManager.GetHeightAtPosition: Can't find terrain at {_position}");
 				return float.MaxValue;
 			}
-			terrainAtPosition.SampleHeight(terrainAtPosition.GetNormalizedPosition(_position), out var height, out var worldHeight, out var normalizedHeight);
+
+			var uvPos = terrainAtPosition.GetNormalizedPosition(_position);
+			terrainAtPosition.SampleHeight(uvPos, out var height, out var worldHeight, out var normalizedHeight);
+			debugTerrainInfos.Add(new DebugTerrainInfo()
+			{
+				terrainGenAtPosition = terrainAtPosition,
+				inputPosition = new Vector3(_position.x, 0, _position.z),
+				outputPosition = new Vector3(_position.x, worldHeight, _position.z),
+			});
 			return worldHeight;
 		}
 		
@@ -70,7 +80,7 @@ namespace World
 			EnsureTerrainParent();
 			// Todo: I don't think the terrain index will be correct when the player moves off the first terrain. Double check this
 			var terrainIndex = WorldToTerrainIndex(_position);
-			Debug.Log($"TerrainManager.EditorGetHeightAtPosition terrainIndex: {terrainIndex}");
+			Debug.Log($"TerrainManager.EditorGetHeightAtPosition {_position}, terrainIndex: {terrainIndex}");
 			var terrains = terrainParent.GetComponentsInChildren<TRN_Generator>();
 			var terrainAtPosition = terrains.First(_t => _t.WorldIndex == terrainIndex);
 			
@@ -100,9 +110,40 @@ namespace World
 
 		private Vector2Int WorldToTerrainIndex(Vector3 _position)
 		{
-			var terrainIndex = new Vector2Int(Mathf.RoundToInt(_position.x / terrainGeneratorPrefab.width)+Mathf.CeilToInt(loadRadius / terrainGeneratorPrefab.width),
-				Mathf.RoundToInt(_position.y / terrainGeneratorPrefab.width)+Mathf.CeilToInt(loadRadius / terrainGeneratorPrefab.width));
+			Debug.Log($"TerrainManager.WorldToTerrainIndex position: {_position}");
+			var posX = _position.x + ((float) terrainGeneratorPrefab.width / 2);
+			var posZ = _position.z + ((float) terrainGeneratorPrefab.width / 2);
+			Debug.Log($"TerrainManager.WorldToTerrainIndex posX: {posX}, posZ: {posZ}");
+			var indexX = Mathf.FloorToInt(posX / terrainGeneratorPrefab.width);
+			var indexZ = Mathf.FloorToInt(posZ / terrainGeneratorPrefab.width);
+			Debug.Log($"TerrainManager.WorldToTerrainIndex indexX: {indexX}, indexZ: {indexZ}");
+			var terrainIndex = new Vector2Int(indexX, indexZ);
+			Debug.Log($"TerrainManager.WorldToTerrainIndex terrainIndex: {terrainIndex}");
 			return terrainIndex;
+		}
+
+		private struct DebugTerrainInfo
+		{
+			public TRN_Generator terrainGenAtPosition;
+			public Vector3 inputPosition;
+			public Vector3 outputPosition;
+		}
+
+		private void OnDrawGizmos()
+		{
+			if (debugTerrainInfos.Count == 0) return;
+			foreach (var debugInfo in debugTerrainInfos)
+			{
+				Gizmos.color = Color.yellow;
+				Gizmos.DrawWireSphere(debugInfo.inputPosition, 1f);
+				Gizmos.color = Color.red;
+				Gizmos.DrawWireSphere(debugInfo.outputPosition, 1f);
+				Gizmos.color = Color.orange;
+				Gizmos.DrawLine(debugInfo.inputPosition, debugInfo.outputPosition);
+				Gizmos.color = Color.blue;
+				Gizmos.DrawLine(debugInfo.outputPosition, debugInfo.terrainGenAtPosition.transform.position);
+			}
+			
 		}
 	}
 }

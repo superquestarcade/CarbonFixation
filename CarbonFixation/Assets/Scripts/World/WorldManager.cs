@@ -10,6 +10,9 @@ namespace World
 		[SerializeField] private PointOfInterestGenerator poiGenerator;
 		[SerializeField] private PlayerCharacterController playerCharacterController;
 		[SerializeField] private Transform startingCameraRig;
+
+		[Header("Settings")]
+		[SerializeField] private float poiLoadRadius = 500f;
 		
 		private System.Random worldGenRng;
 
@@ -19,9 +22,9 @@ namespace World
 			terrainManager.ClearTerrains();
 			terrainManager.LoadTerrains();
 			var playerStartPosition = new Vector2(playerCharacterController.transform.position.x, playerCharacterController.transform.position.z);
-			poiGenerator.GeneratePois(playerStartPosition, 100f, worldGenRng);
+			poiGenerator.GeneratePois(playerStartPosition, poiLoadRadius, worldGenRng);
 			SetPlayerOnTerrain();
-			startingCameraRig.position = playerStartPosition;
+			startingCameraRig.position = playerCharacterController.transform.position;
 		}
 
 		public void SetPlayerOnTerrain()

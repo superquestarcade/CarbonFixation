@@ -289,6 +289,37 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   CustomBlends: {fileID: 0}
+--- !u!1 &388229278
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 388229279}
+  m_Layer: 0
+  m_Name: POIs
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &388229279
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 388229278}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 738069078}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -464,6 +495,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1714652047}
+  - {fileID: 388229279}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &738069079
@@ -484,6 +516,7 @@ MonoBehaviour:
   poiGenerator: {fileID: 738069080}
   playerCharacterController: {fileID: 7948943386653618807}
   startingCameraRig: {fileID: 2093858883}
+  poiLoadRadius: 500
 --- !u!114 &738069080
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -497,8 +530,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::World.PointOfInterestGenerator
   debugLevel: 0
-  baseDistance: 10
-  distanceVariance: 2
+  parentTransform: {fileID: 388229279}
+  baseDistance: 300
+  distanceVariance: 100
   poiGenDataSo: {fileID: 11400000, guid: 2fd785018b5895a4985fb19c71b2a47f, type: 2}
 --- !u!1 &832575517
 GameObject:
