@@ -240,17 +240,10 @@ public class TRN_Generator : MonoBehaviour
 
     public Vector2 GetNormalizedPosition(Vector3 worldPosition)
     {
-        // Vector3 localPos = terrain.transform.InverseTransformPoint(worldPosition);
-        /*Vector3 localPos = new Vector3(
-            worldPosition.x%terrain.terrainData.size.x,
-            terrain.transform.position.y,
-            worldPosition.z%terrain.terrainData.size.z
-            );*/
-
-        //Position relative to terrain as 0-1 value
-        return new Vector2(
-            (worldPosition.x%terrain.terrainData.size.x) / terrain.terrainData.size.x,
-            (worldPosition.z%terrain.terrainData.size.z) / terrain.terrainData.size.z);
+        var localPosition = worldPosition - terrain.transform.position;
+        var wrappedPosition = new Vector2(localPosition.x,  localPosition.z).Wrap(terrain.terrainData.size.x);
+        var normalizedPosition = wrappedPosition / terrain.terrainData.size.x;
+        return normalizedPosition;
     }
 
     public void SampleHeight(Vector2 position, out float height, out float worldHeight, out float normalizedHeight)

@@ -64,13 +64,22 @@ namespace World
 				return float.MaxValue;
 			}
 
+			// Todo: height sampling is incorrect
+			// Checked: terrain index, terrainAtPosition
+			// Check: uvPos, SampleHeight
 			var uvPos = terrainAtPosition.GetNormalizedPosition(_position);
+			Debug.Log($"TerrainManager.GetHeightAtPosition {_position}, uvPos: {uvPos}");
 			terrainAtPosition.SampleHeight(uvPos, out var height, out var worldHeight, out var normalizedHeight);
 			debugTerrainInfos.Add(new DebugTerrainInfo()
 			{
 				terrainGenAtPosition = terrainAtPosition,
 				inputPosition = new Vector3(_position.x, 0, _position.z),
 				outputPosition = new Vector3(_position.x, worldHeight, _position.z),
+				uvWorldPosition = new Vector3(
+					terrainAtPosition.transform.position.x + (uvPos.x * terrainAtPosition.width), 
+					0, 
+					terrainAtPosition.transform.position.z + (uvPos.y * terrainAtPosition.width)
+					),
 			});
 			return worldHeight;
 		}
@@ -127,6 +136,7 @@ namespace World
 			public TRN_Generator terrainGenAtPosition;
 			public Vector3 inputPosition;
 			public Vector3 outputPosition;
+			public Vector3 uvWorldPosition;
 		}
 
 		private void OnDrawGizmos()
@@ -134,14 +144,17 @@ namespace World
 			if (debugTerrainInfos.Count == 0) return;
 			foreach (var debugInfo in debugTerrainInfos)
 			{
-				Gizmos.color = Color.yellow;
-				Gizmos.DrawWireSphere(debugInfo.inputPosition, 1f);
+				/*Gizmos.color = Color.yellow;
+				Gizmos.DrawWireSphere(debugInfo.inputPosition, 1f);*/
 				Gizmos.color = Color.red;
 				Gizmos.DrawWireSphere(debugInfo.outputPosition, 1f);
 				Gizmos.color = Color.orange;
 				Gizmos.DrawLine(debugInfo.inputPosition, debugInfo.outputPosition);
-				Gizmos.color = Color.blue;
-				Gizmos.DrawLine(debugInfo.outputPosition, debugInfo.terrainGenAtPosition.transform.position);
+				/*Gizmos.color = Color.blue;
+				Gizmos.DrawLine(debugInfo.outputPosition, debugInfo.terrainGenAtPosition.transform.position);*/
+				Gizmos.color = Color.hotPink;
+				Gizmos.DrawSphere(debugInfo.uvWorldPosition, 10f);
+				Gizmos.DrawLine(debugInfo.outputPosition, debugInfo.uvWorldPosition);
 			}
 			
 		}

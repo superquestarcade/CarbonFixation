@@ -17,7 +17,7 @@ RenderSettings:
   m_Fog: 1
   m_FogColor: {r: 0.5, g: 0.46078432, b: 0.4019608, a: 1}
   m_FogMode: 3
-  m_FogDensity: 0.02
+  m_FogDensity: 0.01
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
   m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
@@ -531,8 +531,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::World.PointOfInterestGenerator
   debugLevel: 0
   parentTransform: {fileID: 388229279}
-  baseDistance: 300
-  distanceVariance: 100
+  baseDistance: 200
+  distanceVariance: 80
   poiGenDataSo: {fileID: 11400000, guid: 2fd785018b5895a4985fb19c71b2a47f, type: 2}
 --- !u!1 &832575517
 GameObject:
