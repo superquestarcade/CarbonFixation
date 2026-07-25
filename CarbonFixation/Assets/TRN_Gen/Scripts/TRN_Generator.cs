@@ -31,6 +31,7 @@ public class TRN_Generator : MonoBehaviour
     float[,] heightMap;
 
     public const float WorldWrapNoiseSize = 50000f;
+    public const float NoiseOriginOffset = 100000f;
 
     public void Generate()
     {
@@ -68,7 +69,7 @@ public class TRN_Generator : MonoBehaviour
             for (int z = 0; z < mapRes; z++)
             {
                 var mapSampleWorldPoint = new Vector2((float)x / (mapRes - 1), (float)z / (mapRes - 1)) * width;
-                Vector2 uv = (planarPosition + mapSampleWorldPoint) * sampleScale;
+                Vector2 uv = (planarPosition + mapSampleWorldPoint + new Vector2(NoiseOriginOffset, NoiseOriginOffset)) * sampleScale;
                 float noiseHeight = 0;
                 float total = 0;
 
@@ -110,7 +111,7 @@ public class TRN_Generator : MonoBehaviour
                     noiseHeight += noiseLayer * noise[i].weight;
                 }
 
-                float riverMap = rivers ? TRN_Noise.RiverMap(new Vector2(x, z), riverScale): 1f;
+                float riverMap = rivers ? TRN_Noise.RiverMap(uv, riverScale): 1f;
                 // heightMap[x, z] = (noiseHeight / total) * TRN_Filters.Falloff(uv, heightSize, new Vector2(x, z), beachHeight) * riverMap;
                 heightMap[z, x] = (noiseHeight / total) * riverMap;
             }
