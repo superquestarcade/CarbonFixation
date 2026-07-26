@@ -14,7 +14,7 @@ OcclusionCullingSettings:
 RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 10
-  m_Fog: 1
+  m_Fog: 0
   m_FogColor: {r: 0.5, g: 0.46078432, b: 0.4019608, a: 1}
   m_FogMode: 3
   m_FogDensity: 0.01
@@ -516,7 +516,6 @@ MonoBehaviour:
   poiGenerator: {fileID: 738069080}
   playerCharacterController: {fileID: 7948943386653618807}
   startingCameraRig: {fileID: 2093858883}
-  poiLoadRadius: 500
 --- !u!114 &738069080
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -529,10 +528,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cc9ff7625b04714b87c0c111ce0972c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::World.PointOfInterestGenerator
-  debugLevel: 0
+  debugLevel: 1
   parentTransform: {fileID: 388229279}
-  baseDistance: 200
-  distanceVariance: 80
+  loadRadius: 1000
+  baseDistance: 400
+  minRandomOffset: 0.6
+  maxRandomOffset: 0.8
   poiGenDataSo: {fileID: 11400000, guid: 2fd785018b5895a4985fb19c71b2a47f, type: 2}
 --- !u!1 &832575517
 GameObject:

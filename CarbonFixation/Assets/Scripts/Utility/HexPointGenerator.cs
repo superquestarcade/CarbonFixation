@@ -8,10 +8,10 @@ public static class HexPointGenerator
 	/// </summary>
 	/// <param name="rings">Number of rings around the center (0 = just center point)</param>
 	/// <param name="spacing">Distance between adjacent points</param>
-	/// <param name="randomOffset">Max random displacement applied to each point</param>
-	public static List<Vector2> GenerateHexPoints(int rings, float spacing, float randomOffset, System.Random rng)
+	public static List<Vector2> GenerateHexPoints(int rings, float spacing)
 	{
 		List<Vector2> points = new List<Vector2>();
+		float adjustedSpacing = spacing / Mathf.Sqrt(3f);
 
 		for (int q = -rings; q <= rings; q++)
 		{
@@ -20,19 +20,16 @@ public static class HexPointGenerator
 
 			for (int r = r1; r <= r2; r++)
 			{
+				// Skip every 3rd point (the "hex center" sub-lattice)
+				// to turn the triangular lattice into a honeycomb pattern
+				int mod = ((q - r) % 3 + 3) % 3; // safe mod for negative values
+				if (mod == 0) continue;
+				
 				// Axial -> world position (flat-top hexagon layout)
-				float x = spacing * (1.5f * q);
-				float y = spacing * (Mathf.Sqrt(3f) * (r + q / 2f));
+				float x = adjustedSpacing * (1.5f * q);
+				float y = adjustedSpacing * (Mathf.Sqrt(3f) * (r + q / 2f));
 
 				Vector2 point = new Vector2(x, y);
-
-				if (randomOffset > 0f)
-				{
-					var rngDistance = (float) rng.NextDouble() * randomOffset;
-					var randomizedPoint = new Vector2((float) rng.NextDouble(),  (float)rng.NextDouble()).normalized * rngDistance;
-					Debug.Log($"GenerateHexPoints ({r},{q}) rngDistance: {rngDistance}, randomizedPoint: {randomizedPoint}");
-					point += randomizedPoint;
-				}
 
 				points.Add(point);
 			}
@@ -41,15 +38,19 @@ public static class HexPointGenerator
 		return points;
 	}
 	
+	// Todo: These formula below might return triangle grid coordinates as they were written before fixing above
+	
 	/// <summary>
     /// Converts a world-space point to the nearest hex grid position
     /// (flat-top layout, matching GenerateHexPoints).
     /// </summary>
     public static Vector2 WorldToNearestHexPoint(Vector2 worldPos, float spacing)
     {
+	    float adjustedSpacing = spacing / Mathf.Sqrt(3f);
+	    
         // Invert the axial -> world formulas to get fractional axial coords
-        float qFrac = worldPos.x / (1.5f * spacing);
-        float rFrac = (worldPos.y / (spacing * Mathf.Sqrt(3f))) - (qFrac / 2f);
+        float qFrac = worldPos.x / (1.5f * adjustedSpacing);
+        float rFrac = (worldPos.y / (adjustedSpacing * Mathf.Sqrt(3f))) - (qFrac / 2f);
 
         // Convert to cube coordinates for correct rounding
         float xFrac = qFrac;
@@ -77,8 +78,8 @@ public static class HexPointGenerator
         int r = (int)zRound;
 
         // Axial -> world position (same formula as generator)
-        float x = spacing * (1.5f * q);
-        float y = spacing * (Mathf.Sqrt(3f) * (r + q / 2f));
+        float x = adjustedSpacing * (1.5f * q);
+        float y = adjustedSpacing * (Mathf.Sqrt(3f) * (r + q / 2f));
 
         return new Vector2(x, y);
     }
@@ -89,8 +90,10 @@ public static class HexPointGenerator
     /// </summary>
     public static Vector2Int WorldToNearestHexCoord(Vector2 worldPos, float spacing)
     {
-        float qFrac = worldPos.x / (1.5f * spacing);
-        float rFrac = (worldPos.y / (spacing * Mathf.Sqrt(3f))) - (qFrac / 2f);
+	    float adjustedSpacing = spacing / Mathf.Sqrt(3f);
+	    
+        float qFrac = worldPos.x / (1.5f * adjustedSpacing);
+        float rFrac = (worldPos.y / (adjustedSpacing * Mathf.Sqrt(3f))) - (qFrac / 2f);
 
         float xFrac = qFrac;
         float zFrac = rFrac;
