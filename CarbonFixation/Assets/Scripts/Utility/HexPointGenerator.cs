@@ -38,82 +38,168 @@ public static class HexPointGenerator
 		return points;
 	}
 	
-	// Todo: These formula below might return triangle grid coordinates as they were written before fixing above
+	public static Vector2Int[] GenerateHexOuterPoints(Vector2Int _origin, float _spacing, Vector2 _area, out Vector2[] _worldPositions)
+	{
+		// Basis vectors of the triangular lattice containing both hex centers and hex vertices.
+		// Lattice point (a, b) -> world position = a*u + b*v
+		Vector2 u = new Vector2(_spacing, 0f);
+		Vector2 v = new Vector2(_spacing * 0.5f, _spacing * Mathf.Sqrt(3f) * 0.5f);
+
+		// How far out (in lattice steps) to search to cover the area, plus margin.
+		int aRange = Mathf.CeilToInt(_area.x / _spacing);
+		int bRange = Mathf.CeilToInt(_area.y / (_spacing * Mathf.Sqrt(3f) * 0.5f));
+
+		List<Vector2Int> coords = new List<Vector2Int>();
+		List<Vector2> positions = new List<Vector2>();
+		Vector2 halfArea = _area * 0.5f;
+
+		for (int a = -aRange; a <= aRange; a++)
+		{
+			for (int b = -bRange; b <= bRange; b++)
+			{
+				// residue 0 = hex CENTER point -> skip it, we only want the 6 outer corners
+				int residue = ((a - b) % 3 + 3) % 3;
+				if (residue == 0)
+					continue;
+
+				Vector2 worldPos = a * u + b * v;
+
+				if (Mathf.Abs(worldPos.x) > halfArea.x || Mathf.Abs(worldPos.y) > halfArea.y)
+					continue;
+
+				coords.Add(new Vector2Int(a, b) + _origin);
+				positions.Add(worldPos);
+			}
+		}
+
+		_worldPositions = positions.ToArray();
+		return coords.ToArray();
+	}
+
+	public static Vector2 HexToWorldPos(this Vector2Int _value, float _spacing)
+	{
+		Vector2 u = new Vector2(_spacing, 0f);
+		Vector2 v = new Vector2(_spacing * 0.5f, _spacing * Mathf.Sqrt(3f) * 0.5f);
+
+		return _value.x * u + _value.y * v;
+	}
 	
-	/// <summary>
-    /// Converts a world-space point to the nearest hex grid position
-    /// (flat-top layout, matching GenerateHexPoints).
-    /// </summary>
-    public static Vector2 WorldToNearestHexPoint(Vector2 worldPos, float spacing)
-    {
-	    float adjustedSpacing = spacing / Mathf.Sqrt(3f);
-	    
-        // Invert the axial -> world formulas to get fractional axial coords
-        float qFrac = worldPos.x / (1.5f * adjustedSpacing);
-        float rFrac = (worldPos.y / (adjustedSpacing * Mathf.Sqrt(3f))) - (qFrac / 2f);
+	public static Vector2Int[] FilterHexPointsByNoise(
+		Vector2Int[] _coords,
+		Vector2[] _positions,
+		float _noiseScale,
+		float _threshold,
+		out Vector2[] _filteredPositions,
+		Vector2 _noiseOffset = default)
+	{
+		List<Vector2Int> keptCoords = new List<Vector2Int>();
+		List<Vector2> keptPositions = new List<Vector2>();
 
-        // Convert to cube coordinates for correct rounding
-        float xFrac = qFrac;
-        float zFrac = rFrac;
-        float yFrac = -xFrac - zFrac;
+		for (int i = 0; i < _coords.Length; i++)
+		{
+			// Offset sample point away from (0,0) to avoid Perlin's mirror symmetry around the origin
+			float sampleX = (_positions[i].x + _noiseOffset.x) * _noiseScale + 1000f;
+			float sampleY = (_positions[i].y + _noiseOffset.y) * _noiseScale + 1000f;
 
-        float xRound = Mathf.Round(xFrac);
-        float yRound = Mathf.Round(yFrac);
-        float zRound = Mathf.Round(zFrac);
+			float noiseValue = Mathf.PerlinNoise(sampleX, sampleY);
+			
+			// Debug.Log($"FilterHexPointsByNoise position: {_positions[i]}, noiseValue: {noiseValue}");
 
-        float xDiff = Mathf.Abs(xRound - xFrac);
-        float yDiff = Mathf.Abs(yRound - yFrac);
-        float zDiff = Mathf.Abs(zRound - zFrac);
+			if (noiseValue >= _threshold)
+			{
+				keptCoords.Add(_coords[i]);
+				keptPositions.Add(_positions[i]);
+			}
+		}
 
-        // Fix the coordinate with the largest rounding error
-        // so x + y + z == 0 is preserved
-        if (xDiff > yDiff && xDiff > zDiff)
-            xRound = -yRound - zRound;
-        else if (yDiff > zDiff)
-            yRound = -xRound - zRound;
-        else
-            zRound = -xRound - yRound;
+		_filteredPositions = keptPositions.ToArray();
+		return keptCoords.ToArray();
+	}
 
-        int q = (int)xRound;
-        int r = (int)zRound;
+	public static Vector2Int WorldToNearestHexVertex(float _spacing, Vector2 _worldPosition)
+	{
+		float sqrt3 = Mathf.Sqrt(3f);
 
-        // Axial -> world position (same formula as generator)
-        float x = adjustedSpacing * (1.5f * q);
-        float y = adjustedSpacing * (Mathf.Sqrt(3f) * (r + q / 2f));
+		Vector2 u = new Vector2(_spacing, 0f);
+		Vector2 v = new Vector2(_spacing * 0.5f, _spacing * sqrt3 * 0.5f);
 
-        return new Vector2(x, y);
-    }
+		// Inverse of the (u, v) basis matrix, applied to _worldPosition
+		float aFrac = _worldPosition.x / _spacing - _worldPosition.y / (_spacing * sqrt3);
+		float bFrac = 2f * _worldPosition.y / (_spacing * sqrt3);
+		float cFrac = -aFrac - bFrac; // redundant third coord, a + b + c = 0
 
-    /// <summary>
-    /// Same as above, but also returns the axial (q, r) coordinates
-    /// in case you need them for lookups, neighbor checks, etc.
-    /// </summary>
-    public static Vector2Int WorldToNearestHexCoord(Vector2 worldPos, float spacing)
-    {
-	    float adjustedSpacing = spacing / Mathf.Sqrt(3f);
-	    
-        float qFrac = worldPos.x / (1.5f * adjustedSpacing);
-        float rFrac = (worldPos.y / (adjustedSpacing * Mathf.Sqrt(3f))) - (qFrac / 2f);
+		int ra = Mathf.RoundToInt(aFrac);
+		int rb = Mathf.RoundToInt(bFrac);
+		int rc = Mathf.RoundToInt(cFrac);
 
-        float xFrac = qFrac;
-        float zFrac = rFrac;
-        float yFrac = -xFrac - zFrac;
+		float da = Mathf.Abs(ra - aFrac);
+		float db = Mathf.Abs(rb - bFrac);
+		float dc = Mathf.Abs(rc - cFrac);
 
-        float xRound = Mathf.Round(xFrac);
-        float yRound = Mathf.Round(yFrac);
-        float zRound = Mathf.Round(zFrac);
+		if (da > db && da > dc)
+			ra = -rb - rc;
+		else if (db > dc)
+			rb = -ra - rc;
 
-        float xDiff = Mathf.Abs(xRound - xFrac);
-        float yDiff = Mathf.Abs(yRound - yFrac);
-        float zDiff = Mathf.Abs(zRound - zFrac);
+		int residue = ((ra - rb) % 3 + 3) % 3;
 
-        if (xDiff > yDiff && xDiff > zDiff)
-            xRound = -yRound - zRound;
-        else if (yDiff > zDiff)
-            yRound = -xRound - zRound;
-        else
-            zRound = -xRound - yRound;
+		if (residue != 0)
+			return new Vector2Int(ra, rb);
 
-        return new Vector2Int((int)xRound, (int)zRound);
-    }
+		// Landed on a center: pick the nearest of its 6 surrounding vertex points instead
+		Vector2Int[] neighborOffsets =
+		{
+			new Vector2Int(1, 0), new Vector2Int(-1, 0),
+			new Vector2Int(0, 1), new Vector2Int(0, -1),
+			new Vector2Int(1, -1), new Vector2Int(-1, 1)
+		};
+
+		Vector2Int bestCoord = default;
+		float bestSqrDist = float.MaxValue;
+
+		foreach (Vector2Int offset in neighborOffsets)
+		{
+			int na = ra + offset.x;
+			int nb = rb + offset.y;
+			Vector2 candidatePos = na * u + nb * v;
+			float sqrDist = (candidatePos - _worldPosition).sqrMagnitude;
+
+			if (sqrDist < bestSqrDist)
+			{
+				bestSqrDist = sqrDist;
+				bestCoord = new Vector2Int(na, nb);
+			}
+		}
+
+		return bestCoord;
+	}
+
+	public static Vector2Int[] GetNeighbours(this Vector2Int _value, Vector2Int[] _hexCoords)
+	{
+		var returnCoords = new List<Vector2Int>();
+
+		int ca = _value.x;
+		int cb = _value.y;
+		int cc = -ca - cb;
+
+		foreach (var hexCoord in _hexCoords)
+		{
+			if (hexCoord == _value) continue;
+
+			int na = hexCoord.x;
+			int nb = hexCoord.y;
+			int nc = -na - nb;
+
+			int da = Mathf.Abs(na - ca);
+			int db = Mathf.Abs(nb - cb);
+			int dc = Mathf.Abs(nc - cc);
+
+			// True lattice neighbors differ by exactly 1 step in cube space
+			if (Mathf.Max(da, Mathf.Max(db, dc)) != 1) continue;
+
+			returnCoords.Add(hexCoord);
+		}
+
+		return returnCoords.ToArray();
+	}
 }

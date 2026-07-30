@@ -480,7 +480,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::World.TerrainManager
   debugLevel: 0
   terrainGeneratorPrefab: {fileID: 2341699608304371281, guid: a40df19227a14644aaa971728bae766d, type: 3}
-  loadRadius: 1000
+  loadRadius: 2000
 --- !u!4 &738069078
 Transform:
   m_ObjectHideFlags: 0
@@ -530,11 +530,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::World.PointOfInterestGenerator
   debugLevel: 1
   parentTransform: {fileID: 388229279}
-  loadRadius: 1000
-  baseDistance: 400
+  loadRadius: 2000
+  baseDistance: 500
+  applyRandomOffset: 0
   minRandomOffset: 0.6
   maxRandomOffset: 0.8
+  poiGenSeed: potato
+  noiseScale: 0.25
+  filterThreshold: 0.4
   poiGenDataSo: {fileID: 11400000, guid: 2fd785018b5895a4985fb19c71b2a47f, type: 2}
+  resourceCorridorPrefab: {fileID: 7548648761641413061, guid: a36271c8d67d04847a94024152cfeb35, type: 3}
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
