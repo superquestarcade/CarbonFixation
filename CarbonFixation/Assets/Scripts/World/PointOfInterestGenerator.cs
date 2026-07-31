@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using Data;
 using UnityEngine;
-using Utility;
 
 namespace World
 {
@@ -20,7 +17,12 @@ namespace World
 		[SerializeField, Range(0,1)] float filterThreshold = 0.3f;
 		
 		[SerializeField] private PoiGenDataSo poiGenDataSo;
-		[SerializeField] private GameObject resourceCorridorPrefab;
+		
+		[Header("Resource Corridors")]
+		[SerializeField] private ResourceCorridor resourceCorridorPrefab;
+
+		[SerializeField] private Vector2 corridorCrossSection = new(50,100);
+		private List<ResourceCorridor> poiCorridors = new List<ResourceCorridor>();
 
 		private List<PointOfInterest> activePois = new();
 		private List<PointOfInterest> inactivePois = new();
@@ -87,7 +89,10 @@ namespace World
 				}
 			}
 			
-			SpawnResourceCorridors(neighbours);
+			SpawnResourceCorridors(_originPosition, neighbours,_rng);
+			Physics.SyncTransforms();
+			foreach(var corridor in poiCorridors)
+				corridor.Generate(_rng);
 		}
 
 		private PointOfInterest SpawnRandomPoi(Vector3 _position, System.Random _rng)
@@ -99,9 +104,26 @@ namespace World
 			return poi;
 		}
 		
-		private void SpawnResourceCorridors(Dictionary<Vector2Int, Vector2Int[]> _poiSpokes)
+		private void SpawnResourceCorridors(Vector3 _spawnOrigin, Dictionary<Vector2Int, Vector2Int[]> _poiSpokes, System.Random _rng)
 		{
 			var existingOrigins = new List<Vector2Int>();
+			// Spawn a resource corridor to the first poi
+			var originHex = HexPointGenerator.WorldToNearestHexVertex(baseDistance, _spawnOrigin);
+			var hexPoints = originHex.GetNeighbours(_poiSpokes.Keys.ToArray());
+			_spawnOrigin.y = WorldManager.singleton.GetHeightAtWorldPosition(_spawnOrigin);
+			
+			foreach (var hexPoint in hexPoints)
+			{
+				var spokePosition  = poiPositions[hexPoint];
+				var spawnPosition = Vector3.Lerp(_spawnOrigin, spokePosition, 0.5f);
+				var scale = Vector3.Distance(_spawnOrigin, spokePosition);
+				var direction = spokePosition - _spawnOrigin;
+				var targetRotation = Quaternion.LookRotation(direction);
+				var corridor = Instantiate(resourceCorridorPrefab, spawnPosition, targetRotation, parentTransform);
+				corridor.SetCorridorSize(new Vector3(corridorCrossSection.x, corridorCrossSection.y, scale));
+				poiCorridors.Add(corridor);
+			}
+			
 			foreach (var poiWheel in _poiSpokes)
 			{
 				existingOrigins.Add(poiWheel.Key);
@@ -112,22 +134,23 @@ namespace World
 					var spokePosition  = poiPositions[spoke];
 					var spawnPosition = Vector3.Lerp(originPosition, spokePosition, 0.5f);
 					var scale = Vector3.Distance(originPosition, spokePosition);
-					Vector3 direction = spokePosition - originPosition;
-					Quaternion targetRotation = Quaternion.LookRotation(direction);
+					var direction = spokePosition - originPosition;
+					var targetRotation = Quaternion.LookRotation(direction);
 					var corridor = Instantiate(resourceCorridorPrefab, spawnPosition, targetRotation, parentTransform);
-					corridor.transform.localScale = new Vector3(10, 100, scale);
+					corridor.SetCorridorSize(new Vector3(corridorCrossSection.x, corridorCrossSection.y, scale));
+					poiCorridors.Add(corridor);
 				}
 			}
 		}
 
 		private Vector3 GetRandomPlanarOffset(System.Random _rng, float _maxDistance, float _minDistance = 0)
 		{
-			float magnitudeX = _minDistance + ((float)_rng.NextDouble() * (_maxDistance - _minDistance));
-			float signX = _rng.Next(2) == 0 ? -1f : 1f;
+			var magnitudeX = _minDistance + ((float)_rng.NextDouble() * (_maxDistance - _minDistance));
+			var signX = _rng.Next(2) == 0 ? -1f : 1f;
 			var offsetX = magnitudeX * signX;
 			
-			float magnitudeZ = _minDistance + ((float)_rng.NextDouble() * (_maxDistance - _minDistance));
-			float signZ = _rng.Next(2) == 0 ? -1f : 1f;
+			var magnitudeZ = _minDistance + ((float)_rng.NextDouble() * (_maxDistance - _minDistance));
+			var signZ = _rng.Next(2) == 0 ? -1f : 1f;
 			var offsetZ = magnitudeZ * signZ;
 			
 			var offset = new Vector3(offsetX, 0,  offsetZ);
@@ -138,7 +161,7 @@ namespace World
 			return offset;
 		}
 
-		private void OnDrawGizmos()
+		/*private void OnDrawGizmos()
 		{
 			if (neighbours.Count <= 0) return;
 			foreach (var poi in neighbours)
@@ -154,6 +177,6 @@ namespace World
 					Gizmos.DrawLine(originPosition, endPosition);
 				}
 			}
-		}
+		}*/
 	}
 }

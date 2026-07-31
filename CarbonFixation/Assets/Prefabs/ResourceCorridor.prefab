@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 6314841860029441691}
   - component: {fileID: 3380345372805294125}
   - component: {fileID: 3299922460180869218}
+  - component: {fileID: 6032599301405824022}
+  - component: {fileID: 540103363408554497}
   m_Layer: 0
   m_Name: ResourceCorridor
   m_TagString: Untagged
@@ -48,7 +50,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7548648761641413061}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -90,3 +92,40 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &6032599301405824022
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7548648761641413061}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 415f3fe4a19549aab974b627f050885b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::World.ResourceCorridor
+  debugLevel: 0
+  boxCollider: {fileID: 540103363408554497}
+  minResources: 50
+  maxResources: 100
+--- !u!65 &540103363408554497
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7548648761641413061}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}

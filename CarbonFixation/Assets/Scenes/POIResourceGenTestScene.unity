@@ -516,6 +516,7 @@ MonoBehaviour:
   poiGenerator: {fileID: 738069080}
   playerCharacterController: {fileID: 7948943386653618807}
   startingCameraRig: {fileID: 2093858883}
+  resourceItems: {fileID: 11400000, guid: a03f6313096e4d74395abb56dfc2385e, type: 2}
 --- !u!114 &738069080
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -532,14 +533,15 @@ MonoBehaviour:
   parentTransform: {fileID: 388229279}
   loadRadius: 2000
   baseDistance: 500
-  applyRandomOffset: 0
+  applyRandomOffset: 1
   minRandomOffset: 0.6
   maxRandomOffset: 0.8
   poiGenSeed: potato
   noiseScale: 0.25
   filterThreshold: 0.4
   poiGenDataSo: {fileID: 11400000, guid: 2fd785018b5895a4985fb19c71b2a47f, type: 2}
-  resourceCorridorPrefab: {fileID: 7548648761641413061, guid: a36271c8d67d04847a94024152cfeb35, type: 3}
+  resourceCorridorPrefab: {fileID: 6032599301405824022, guid: a36271c8d67d04847a94024152cfeb35, type: 3}
+  corridorCrossSection: {x: 50, y: 100}
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0

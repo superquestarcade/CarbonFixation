@@ -1,6 +1,8 @@
 ﻿using System;
 using Locomotion;
+using ScriptableObjects;
 using UnityEngine;
+using World.Resources;
 
 namespace World
 {
@@ -10,6 +12,7 @@ namespace World
 		[SerializeField] private PointOfInterestGenerator poiGenerator;
 		[SerializeField] private PlayerCharacterController playerCharacterController;
 		[SerializeField] private Transform startingCameraRig;
+		[SerializeField] private ResourceItemsSO resourceItems;
 
 		private System.Random worldGenRng;
 
@@ -57,6 +60,11 @@ namespace World
 			}
 			
 			return worldHeight;
+		}
+
+		public ResourceItem GetRandomResourceItem(System.Random _rng)
+		{
+			return resourceItems.GetRandomResourceItem(_rng);
 		}
 	}
 }
