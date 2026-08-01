@@ -27,6 +27,9 @@ public class TRN_Generator : MonoBehaviour
     [SerializeField] private TRNDetaiTexture[] detailTextures;
     [HideInInspector] public bool spawnPrefabs = true;
 
+    private Vector2Int worldIndex = new Vector2Int(0, 0);
+    public Vector2Int WorldIndex => worldIndex;
+    
     Terrain terrain;
     float[,] heightMap;
 
@@ -237,12 +240,10 @@ public class TRN_Generator : MonoBehaviour
 
     public Vector2 GetNormalizedPosition(Vector3 worldPosition)
     {
-        Vector3 localPos = terrain.transform.InverseTransformPoint(worldPosition);
-
-        //Position relative to terrain as 0-1 value
-        return new Vector2(
-            localPos.x / terrain.terrainData.size.x,
-            localPos.z / terrain.terrainData.size.z);
+        var localPosition = worldPosition - terrain.transform.position;
+        var wrappedPosition = new Vector2(localPosition.x,  localPosition.z).Wrap(terrain.terrainData.size.x);
+        var normalizedPosition = wrappedPosition / terrain.terrainData.size.x;
+        return normalizedPosition;
     }
 
     public void SampleHeight(Vector2 position, out float height, out float worldHeight, out float normalizedHeight)
@@ -355,6 +356,16 @@ public class TRN_Generator : MonoBehaviour
 
         terrain.terrainData.size = new Vector3(width - 1, height, width);
         terrain.terrainData.size = new Vector3(width, height, width);
+    }
+
+    public void SetWorldIndex(int _x, int _z)
+    {
+        worldIndex = new Vector2Int(_x, _z);
+    }
+
+    public void SetWorldIndex(Vector2Int _terrainIndex)
+    {
+        worldIndex = _terrainIndex;
     }
 }
 
