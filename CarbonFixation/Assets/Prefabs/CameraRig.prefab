@@ -28,7 +28,7 @@ Transform:
   m_GameObject: {fileID: 2094504626211902269}
   serializedVersion: 2
   m_LocalRotation: {x: 0.15324292, y: -0.6697528, z: 0.14411683, w: 0.7121644}
-  m_LocalPosition: {x: -0.028307715, y: 5, z: 0.99610823}
+  m_LocalPosition: {x: 0, y: 1, z: 0.4800856}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -177,6 +177,7 @@ MonoBehaviour:
   cCamera: {fileID: 1888823552413865795}
   cSplineDolly: {fileID: 7491530639633306954}
   cSpline: {fileID: 3084887562277368599}
+  splineKnotHeight: 5
 --- !u!1 &7969397117051142888
 GameObject:
   m_ObjectHideFlags: 0
@@ -239,65 +240,45 @@ MonoBehaviour:
   - m_EditModeType: 1
     m_Knots:
     - Position:
-        x: -0.5
-        y: 5
-        z: 0.5
+        x: 0
+        y: 1
+        z: 0
       TangentIn:
-        x: -0
-        y: -0
-        z: -0.07071068
+        x: 0
+        y: 0
+        z: 0
       TangentOut:
         x: 0
         y: 0
-        z: 0.07071068
+        z: 0
       Rotation:
         value:
-          x: -0.0016298905
-          y: 0.38268
-          z: -0.0039349035
-          w: 0.9238712
+          x: 0
+          y: 0
+          z: 0
+          w: 1
     - Position:
         x: 0
-        y: 5
+        y: 1
         z: 1
       TangentIn:
-        x: -0
-        y: -0
-        z: -0.16666666
+        x: 0
+        y: 0
+        z: 0
       TangentOut:
         x: 0
         y: 0
-        z: 0.16666666
+        z: 0
       Rotation:
         value:
-          x: -0.25131762
-          y: 0.6609383
-          z: -0.25131762
-          w: 0.6609383
-    - Position:
-        x: 0.5
-        y: 5
-        z: 0.5
-      TangentIn:
-        x: -0
-        y: -0
-        z: -0.07071068
-      TangentOut:
-        x: 0
-        y: 0
-        z: 0.07071068
-      Rotation:
-        value:
-          x: -0.6058185
-          y: 0.6975223
-          z: -0.25093824
-          w: 0.2889232
+          x: 0
+          y: 0
+          z: 0
+          w: 1
     m_MetaData:
-    - Mode: 0
+    - Mode: 1
       Tension: 0.5
-    - Mode: 0
-      Tension: 0.5
-    - Mode: 0
+    - Mode: 1
       Tension: 0.5
     m_Closed: 0
     m_IntData:

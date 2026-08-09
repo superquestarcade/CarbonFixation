@@ -14,9 +14,11 @@ namespace World
 		[SerializeField] private PlayerCharacterController playerCharacterController;
 		[SerializeField] private Transform startingCameraRig;
 		[SerializeField] private ResourceItemsSO resourceItems;
+		[SerializeField] private float updateClosestCameraRig = 0.5f;
+		private float cameraRigUpdateTimer = 0f;
 
 		private System.Random worldGenRng;
-		private bool testSetNearestCameraRig = true;
+		private bool setNearestCameraRigDirty = true;
 
 		private void Start()
 		{
@@ -32,9 +34,15 @@ namespace World
 
 		private void Update()
 		{
-			if (!testSetNearestCameraRig) return;
+			CameraRigUpdate();
+		}
+
+		private void CameraRigUpdate()
+		{
+			cameraRigUpdateTimer -= Time.deltaTime;
+			if (cameraRigUpdateTimer > 0) return;
 			CameraManager.singleton.SetNearestCameraRigFocus(playerCharacterController.transform.position);
-			testSetNearestCameraRig = false;
+			cameraRigUpdateTimer += updateClosestCameraRig;
 		}
 
 		public void SetPlayerOnTerrain()

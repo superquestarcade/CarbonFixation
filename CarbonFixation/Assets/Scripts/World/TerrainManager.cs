@@ -14,7 +14,7 @@ namespace World
 		private Transform terrainParent;
 		private List<TRN_Generator> activeTerrains = new();
 		
-		private List<DebugTerrainInfo> debugTerrainInfos = new();
+		// private List<DebugTerrainInfo> debugTerrainInfos = new();
 
 		public void LoadTerrains()
 		{
@@ -70,7 +70,7 @@ namespace World
 			var uvPos = terrainAtPosition.GetNormalizedPosition(_position);
 			Debug.Log($"TerrainManager.GetHeightAtPosition {_position}, uvPos: {uvPos}");
 			terrainAtPosition.SampleHeight(uvPos, out var height, out var worldHeight, out var normalizedHeight);
-			debugTerrainInfos.Add(new DebugTerrainInfo()
+			/*debugTerrainInfos.Add(new DebugTerrainInfo()
 			{
 				terrainGenAtPosition = terrainAtPosition,
 				inputPosition = new Vector3(_position.x, 0, _position.z),
@@ -80,7 +80,7 @@ namespace World
 					0, 
 					terrainAtPosition.transform.position.z + (uvPos.y * terrainAtPosition.width)
 					),
-			});
+			});*/
 			return worldHeight;
 		}
 		
@@ -141,21 +141,21 @@ namespace World
 
 		private void OnDrawGizmos()
 		{
-			if (debugTerrainInfos.Count == 0) return;
+			/*if (debugTerrainInfos.Count == 0) return;
 			foreach (var debugInfo in debugTerrainInfos)
 			{
 				/*Gizmos.color = Color.yellow;
-				Gizmos.DrawWireSphere(debugInfo.inputPosition, 1f);*/
+				Gizmos.DrawWireSphere(debugInfo.inputPosition, 1f);#1#
 				Gizmos.color = Color.red;
 				Gizmos.DrawWireSphere(debugInfo.outputPosition, 1f);
 				Gizmos.color = Color.orange;
 				Gizmos.DrawLine(debugInfo.inputPosition, debugInfo.outputPosition);
 				/*Gizmos.color = Color.blue;
-				Gizmos.DrawLine(debugInfo.outputPosition, debugInfo.terrainGenAtPosition.transform.position);*/
+				Gizmos.DrawLine(debugInfo.outputPosition, debugInfo.terrainGenAtPosition.transform.position);#1#
 				Gizmos.color = Color.hotPink;
 				Gizmos.DrawSphere(debugInfo.uvWorldPosition, 10f);
 				Gizmos.DrawLine(debugInfo.outputPosition, debugInfo.uvWorldPosition);
-			}
+			}*/
 			
 		}
 	}
