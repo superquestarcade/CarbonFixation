@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace World
 {
@@ -12,9 +13,12 @@ namespace World
 		[SerializeField] private int maxResources = 100;
 		private List<Vector3> debugSpawnPositions = new List<Vector3>();
 
+		[SerializeField] private UnityEvent<Vector3> OnSetCorridorSize;
+
 		public void SetCorridorSize(Vector3 _size)
 		{
 			boxCollider.size = _size;
+			OnSetCorridorSize?.Invoke(_size);
 		}
 		
 		public void Generate(System.Random _rng)

@@ -1,4 +1,5 @@
 ﻿using System;
+using Cameras;
 using Locomotion;
 using ScriptableObjects;
 using UnityEngine;
@@ -15,9 +16,11 @@ namespace World
 		[SerializeField] private ResourceItemsSO resourceItems;
 
 		private System.Random worldGenRng;
+		private bool testSetNearestCameraRig = true;
 
 		private void Start()
 		{
+			CameraManager.singleton.SetPlayerLookAtTarget(playerCharacterController.transform);
 			worldGenRng = new System.Random(DateTime.Now.GetHashCode());
 			terrainManager.ClearTerrains();
 			terrainManager.LoadTerrains();
@@ -25,6 +28,13 @@ namespace World
 			poiGenerator.GeneratePois(playerStartPosition, worldGenRng);
 			SetPlayerOnTerrain();
 			startingCameraRig.position = playerCharacterController.transform.position;
+		}
+
+		private void Update()
+		{
+			if (!testSetNearestCameraRig) return;
+			CameraManager.singleton.SetNearestCameraRigFocus(playerCharacterController.transform.position);
+			testSetNearestCameraRig = false;
 		}
 
 		public void SetPlayerOnTerrain()
