@@ -17,9 +17,11 @@ namespace Cameras
 
 		private List<Vector3> debugSplineAdjustedPoints = new();
 		private List<Vector3> debugSplineWorldPoints = new();
+		private Vector3 closestSplinePoint;
 		private void Start()
 		{
 			CameraManager.singleton.RegisterCameraRig(this);
+			closestSplinePoint = transform.position;
 		}
 
 		private void OnDestroy()
@@ -77,9 +79,45 @@ namespace Cameras
 			}
 		}
 
+		public Vector3 GetClosestSplinePoint(Vector3 _position)
+		{
+			
+			var closestPoint = cSpline.transform.TransformPoint(cSpline.Splines[0][0].Position);
+			for (var splineIndex = 0; splineIndex < cSpline.Splines.Count; splineIndex++)
+			{
+				var spline = cSpline.Splines[splineIndex];
+				
+				// Convert world space to spline's local space
+				Vector3 localPoint = cSpline.transform.InverseTransformPoint(_position);
+
+				float3 nearest;
+				float t; // normalized time (0-1) along the spline
+				float distance = SplineUtility.GetNearestPoint(
+					spline,
+					localPoint,
+					out nearest,
+					out t
+				);
+
+				// Convert result back to world space
+				Vector3 nearestWorld = cSpline.transform.TransformPoint(nearest);
+				
+				if(Vector3.Distance(nearestWorld, _position) < Vector3.Distance(closestPoint, _position))
+					closestPoint = nearestWorld;
+			}
+			// Debug.DrawLine(_position, closestPoint, Color.chocolate, 10f);
+			closestSplinePoint = closestPoint;
+			return closestPoint;
+		}
+
 		private void OnDrawGizmosSelected()
 		{
-			if (debugSplineAdjustedPoints.Count > 0)
+			Gizmos.color = Color.chocolate;
+			Gizmos.DrawWireSphere(closestSplinePoint, 20f);
+			Gizmos.color = Color.chocolate;
+			Gizmos.DrawSphere(closestSplinePoint, 1f);
+			
+			/*if (debugSplineAdjustedPoints.Count > 0)
 			{
 				foreach (var point in debugSplineAdjustedPoints)
 				{
@@ -98,7 +136,7 @@ namespace Cameras
 					Gizmos.color = Color.deepPink;
 					Gizmos.DrawSphere(point, 1f);
 				}
-			}
+			}*/
 		}
 	}
 }

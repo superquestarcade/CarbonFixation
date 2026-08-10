@@ -25,8 +25,8 @@ namespace Cameras
 			var nearestRig = cameraRigs[0];
 			foreach (var cameraRig in cameraRigs)
 			{
-				var nRigDistance = Vector3.Distance(nearestRig.transform.position, _position);
-				var cRigDistance = Vector3.Distance(cameraRig.transform.position, _position);
+				var nRigDistance = Vector3.Distance(nearestRig.GetClosestSplinePoint(_position), _position);
+				var cRigDistance = Vector3.Distance(cameraRig.GetClosestSplinePoint(_position), _position);
 				if(cRigDistance < nRigDistance)
 				{
 					// Debug.Log($"CameraManager.SetNearestCameraRigFocus rig at {cameraRig.transform.position} " +

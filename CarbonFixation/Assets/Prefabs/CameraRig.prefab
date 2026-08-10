@@ -177,7 +177,7 @@ MonoBehaviour:
   cCamera: {fileID: 1888823552413865795}
   cSplineDolly: {fileID: 7491530639633306954}
   cSpline: {fileID: 3084887562277368599}
-  splineKnotHeight: 5
+  splineKnotHeight: 10
 --- !u!1 &7969397117051142888
 GameObject:
   m_ObjectHideFlags: 0

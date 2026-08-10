@@ -13,12 +13,16 @@ namespace World
 		[SerializeField] private int maxResources = 100;
 		private List<Vector3> debugSpawnPositions = new List<Vector3>();
 
-		[SerializeField] private UnityEvent<Vector3> OnSetCorridorSize;
+		[SerializeField] private UnityEvent<Vector3> OnSetCameraSize;
 
 		public void SetCorridorSize(Vector3 _size)
 		{
 			boxCollider.size = _size;
-			OnSetCorridorSize?.Invoke(_size);
+		}
+
+		public void SetCameraSize(Vector3 _size)
+		{
+			OnSetCameraSize?.Invoke(_size);
 		}
 		
 		public void Generate(System.Random _rng)
