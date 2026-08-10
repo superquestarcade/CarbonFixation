@@ -29,7 +29,6 @@ namespace World
 			var playerStartPosition = new Vector2(playerCharacterController.transform.position.x, playerCharacterController.transform.position.z);
 			poiGenerator.GeneratePois(playerStartPosition, worldGenRng);
 			SetPlayerOnTerrain();
-			startingCameraRig.position = playerCharacterController.transform.position;
 		}
 
 		private void Update()

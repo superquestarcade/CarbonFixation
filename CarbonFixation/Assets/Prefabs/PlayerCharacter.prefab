@@ -46,7 +46,8 @@ GameObject:
   - component: {fileID: 3546039789727312447}
   - component: {fileID: 4851149877852139038}
   - component: {fileID: 304815314671935555}
-  m_Layer: 0
+  - component: {fileID: 6326730035254214991}
+  m_Layer: 7
   m_Name: PlayerCharacter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -232,6 +233,23 @@ MonoBehaviour:
   layerMask:
     serializedVersion: 2
     m_Bits: 64
+--- !u!114 &6326730035254214991
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7118489713718378437}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59f4a907f80f4ff3acde3b96f6cc9f8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Animation.PlayerAnimationController
+  debugLevel: 0
+  playerCharacterController: {fileID: 1621290935143340971}
+  animator: {fileID: 1168579834125692312}
+  speedParamName: Speed
+  kneelParamName: Kneel
 --- !u!1001 &8446634158898634742
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -299,9 +317,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: afcb519f773361b4d9b4709eb564096d, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1168579834125692312}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: afcb519f773361b4d9b4709eb564096d, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 7977618403455017703}
   m_SourcePrefab: {fileID: 100100000, guid: afcb519f773361b4d9b4709eb564096d, type: 3}
 --- !u!4 &8264879916032997405 stripped
 Transform:
@@ -335,20 +350,3 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &7977618403455017703
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8789074642067808935}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 59f4a907f80f4ff3acde3b96f6cc9f8b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Animation.PlayerAnimationController
-  debugLevel: 0
-  playerCharacterController: {fileID: 1621290935143340971}
-  animator: {fileID: 1168579834125692312}
-  speedParamName: Speed
-  kneelParamName: Kneel

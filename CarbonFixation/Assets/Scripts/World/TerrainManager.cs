@@ -68,7 +68,7 @@ namespace World
 			// Checked: terrain index, terrainAtPosition
 			// Check: uvPos, SampleHeight
 			var uvPos = terrainAtPosition.GetNormalizedPosition(_position);
-			Debug.Log($"TerrainManager.GetHeightAtPosition {_position}, uvPos: {uvPos}");
+			// Debug.Log($"TerrainManager.GetHeightAtPosition {_position}, uvPos: {uvPos}");
 			terrainAtPosition.SampleHeight(uvPos, out var height, out var worldHeight, out var normalizedHeight);
 			/*debugTerrainInfos.Add(new DebugTerrainInfo()
 			{
@@ -89,7 +89,7 @@ namespace World
 			EnsureTerrainParent();
 			// Todo: I don't think the terrain index will be correct when the player moves off the first terrain. Double check this
 			var terrainIndex = WorldToTerrainIndex(_position);
-			Debug.Log($"TerrainManager.EditorGetHeightAtPosition {_position}, terrainIndex: {terrainIndex}");
+			// Debug.Log($"TerrainManager.EditorGetHeightAtPosition {_position}, terrainIndex: {terrainIndex}");
 			var terrains = terrainParent.GetComponentsInChildren<TRN_Generator>();
 			var terrainAtPosition = terrains.First(_t => _t.WorldIndex == terrainIndex);
 			
@@ -119,15 +119,15 @@ namespace World
 
 		private Vector2Int WorldToTerrainIndex(Vector3 _position)
 		{
-			Debug.Log($"TerrainManager.WorldToTerrainIndex position: {_position}");
+			// Debug.Log($"TerrainManager.WorldToTerrainIndex position: {_position}");
 			var posX = _position.x + ((float) terrainGeneratorPrefab.width / 2);
 			var posZ = _position.z + ((float) terrainGeneratorPrefab.width / 2);
-			Debug.Log($"TerrainManager.WorldToTerrainIndex posX: {posX}, posZ: {posZ}");
+			// Debug.Log($"TerrainManager.WorldToTerrainIndex posX: {posX}, posZ: {posZ}");
 			var indexX = Mathf.FloorToInt(posX / terrainGeneratorPrefab.width);
 			var indexZ = Mathf.FloorToInt(posZ / terrainGeneratorPrefab.width);
-			Debug.Log($"TerrainManager.WorldToTerrainIndex indexX: {indexX}, indexZ: {indexZ}");
+			// Debug.Log($"TerrainManager.WorldToTerrainIndex indexX: {indexX}, indexZ: {indexZ}");
 			var terrainIndex = new Vector2Int(indexX, indexZ);
-			Debug.Log($"TerrainManager.WorldToTerrainIndex terrainIndex: {terrainIndex}");
+			// Debug.Log($"TerrainManager.WorldToTerrainIndex terrainIndex: {terrainIndex}");
 			return terrainIndex;
 		}
 

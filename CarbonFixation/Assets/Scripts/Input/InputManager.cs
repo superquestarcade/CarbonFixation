@@ -11,9 +11,7 @@ namespace Input
 		[SerializeField] private PlayerInput playerInput;
 
 		[SerializeField] private PlayerCharacterInput playerCharacterInput;
-		// private VehicleInput vehicleInput;
-		// private InputFocus inputFocus;
-		private InputState inputState;
+		private InputState inputState = InputState.Player;
 
 		#region Input Registration
 		/*public void RegisterInput(InputReceiver _inputReceiver, bool _setAsActiveState = false)
@@ -61,6 +59,7 @@ namespace Input
 		public void OnMoveP(InputAction.CallbackContext _context)
 		{
 			if (playerCharacterInput == null) return;
+			if (inputState != InputState.Player) return;
 			if (_context.performed)
 				playerCharacterInput.Move(_context.ReadValue<Vector2>());
 			if(_context.canceled)
@@ -70,6 +69,7 @@ namespace Input
 		public void OnLookP(InputAction.CallbackContext _context)
 		{
 			if (playerCharacterInput == null) return;
+			if (inputState != InputState.Player) return;
 			if (!_context.performed) return;
 			playerCharacterInput.Look(_context.ReadValue<Vector2>());
 		}
@@ -77,6 +77,7 @@ namespace Input
 		public void OnJumpP(InputAction.CallbackContext _context)
 		{
 			if (playerCharacterInput == null) return;
+			if (inputState != InputState.Player) return;
 			if (_context.performed)
 			{
 				if(DebugMessages) Debug.Log($"InputManager.OnJump performed");
@@ -109,6 +110,7 @@ namespace Input
 		public void OnCrouchP(InputAction.CallbackContext _context)
 		{
 			if (playerCharacterInput == null) return;
+			if (inputState != InputState.Player) return;
 			if (_context.performed)
 			{
 				if(DebugMessages) Debug.Log($"InputManager.OnCrouch performed");
@@ -125,6 +127,7 @@ namespace Input
 		public void OnInteractP(InputAction.CallbackContext _context)
 		{
 			if (playerCharacterInput == null) return;
+			if (inputState != InputState.Player) return;
 			if (!_context.performed) return;
 			if(DebugMessages) Debug.Log($"InputManager.OnInteract performed");
 			playerCharacterInput.Interact();
