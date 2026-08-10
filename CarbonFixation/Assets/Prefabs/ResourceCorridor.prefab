@@ -109,7 +109,7 @@ MonoBehaviour:
   boxCollider: {fileID: 540103363408554497}
   minResources: 50
   maxResources: 100
-  OnSetCorridorSize:
+  OnSetCameraSize:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 8949583075118505883}

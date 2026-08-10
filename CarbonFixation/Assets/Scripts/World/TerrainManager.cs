@@ -56,17 +56,14 @@ namespace World
 			EnsureTerrainParent();
 			var terrainIndex = WorldToTerrainIndex(_position);
 			Debug.Log($"TerrainManager.GetHeightAtPosition {_position}, terrainIndex: {terrainIndex}");
-			var terrainAtPosition = activeTerrains.First(_t => _t.WorldIndex == terrainIndex);
+			var terrainAtPosition = activeTerrains.FirstOrDefault(_t => _t.WorldIndex == terrainIndex);
 			
 			if (terrainAtPosition == null)
 			{
 				Debug.LogError($"TerrainManager.GetHeightAtPosition: Can't find terrain at {_position}");
-				return float.MaxValue;
+				return 0f;
 			}
 
-			// Todo: height sampling is incorrect
-			// Checked: terrain index, terrainAtPosition
-			// Check: uvPos, SampleHeight
 			var uvPos = terrainAtPosition.GetNormalizedPosition(_position);
 			// Debug.Log($"TerrainManager.GetHeightAtPosition {_position}, uvPos: {uvPos}");
 			terrainAtPosition.SampleHeight(uvPos, out var height, out var worldHeight, out var normalizedHeight);

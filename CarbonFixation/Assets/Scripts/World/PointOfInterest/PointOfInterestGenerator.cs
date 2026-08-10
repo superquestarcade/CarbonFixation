@@ -15,8 +15,10 @@ namespace World
 		[SerializeField] private string poiGenSeed = "potato";
 		[SerializeField, Range(0,1)] float noiseScale = 0.5f;
 		[SerializeField, Range(0,1)] float filterThreshold = 0.3f;
-		
+
 		[SerializeField] private PoiGenDataSo poiGenDataSo;
+		[SerializeField] private float poiResourceClearanceRadius = 15f;
+		[SerializeField] private float poiCameraClearanceRadius = 30f;
 		
 		[Header("Resource Corridors")]
 		[SerializeField] private ResourceCorridor resourceCorridorPrefab;
@@ -63,7 +65,10 @@ namespace World
 					if (DebugMessages)
 						Debug.Log($"PointOfInterestGenerator.GeneratePoi found existing POI at {worldHexPosition}");
 					// Point has already been generated
-					var poi = SpawnRandomPoi(poiPosition, _rng);
+					var randomIndex = _rng.Next(0, poiGenDataSo.pointOfInterestGenData.Length);
+					var poiData = poiGenDataSo.pointOfInterestGenData[randomIndex];
+					var poi = Instantiate(poiData.poiPrefab, poiPosition, Quaternion.identity, parentTransform);
+					activePois.Add(poi);
 					poi.gameObject.name = $"PointOfInterest {hexPoint}";
 				}
 				else
@@ -81,7 +86,10 @@ namespace World
 						Debug.Log(
 							$"PointOfInterestGenerator.GeneratePoi worldOffsetPosition: {worldOffsetPosition}, heightAtPosition {heightAtPosition}");
 					worldOffsetPosition.y = heightAtPosition;
-					var poi = SpawnRandomPoi(worldOffsetPosition, _rng);
+					var randomIndex = _rng.Next(0, poiGenDataSo.pointOfInterestGenData.Length);
+					var poiData = poiGenDataSo.pointOfInterestGenData[randomIndex];
+					var poi = Instantiate(poiData.poiPrefab, worldOffsetPosition, Quaternion.identity, parentTransform);
+					activePois.Add(poi);
 					poi.gameObject.name = $"PointOfInterest {hexPoint}";
 					poiPositions.Add(hexPoint, worldOffsetPosition);
 					Debug.Log(
@@ -93,15 +101,6 @@ namespace World
 			Physics.SyncTransforms();
 			foreach(var corridor in poiCorridors)
 				corridor.Generate(_rng);
-		}
-
-		private PointOfInterest SpawnRandomPoi(Vector3 _position, System.Random _rng)
-		{
-			var randomIndex = _rng.Next(0, poiGenDataSo.pointOfInterestGenData.Length);
-			var prefab = poiGenDataSo.pointOfInterestGenData[randomIndex].poiPrefab;
-			var poi = Instantiate(prefab, _position, Quaternion.identity, parentTransform);
-			activePois.Add(poi);
-			return poi;
 		}
 		
 		private void SpawnResourceCorridors(Vector3 _spawnOrigin, Dictionary<Vector2Int, Vector2Int[]> _poiSpokes, System.Random _rng)
@@ -116,11 +115,13 @@ namespace World
 			{
 				var spokePosition  = poiPositions[hexPoint];
 				var spawnPosition = Vector3.Lerp(_spawnOrigin, spokePosition, 0.5f);
-				var scale = Vector3.Distance(_spawnOrigin, spokePosition);
+				var scale = Vector3.Distance(_spawnOrigin, spokePosition) - (poiResourceClearanceRadius*2);
 				var direction = spokePosition - _spawnOrigin;
 				var targetRotation = Quaternion.LookRotation(direction);
 				var corridor = Instantiate(resourceCorridorPrefab, spawnPosition, targetRotation, parentTransform);
 				corridor.SetCorridorSize(new Vector3(corridorCrossSection.x, corridorCrossSection.y, scale));
+				var cameraScale = Vector3.Distance(_spawnOrigin, spokePosition) - (poiCameraClearanceRadius*2);
+				corridor.SetCameraSize(new Vector3(corridorCrossSection.x, corridorCrossSection.y, cameraScale));
 				poiCorridors.Add(corridor);
 			}
 			
@@ -133,11 +134,13 @@ namespace World
 					if (existingOrigins.Contains(spoke)) continue;
 					var spokePosition  = poiPositions[spoke];
 					var spawnPosition = Vector3.Lerp(originPosition, spokePosition, 0.5f);
-					var scale = Vector3.Distance(originPosition, spokePosition);
+					var scale = Vector3.Distance(originPosition, spokePosition) - (poiResourceClearanceRadius*2);
 					var direction = spokePosition - originPosition;
 					var targetRotation = Quaternion.LookRotation(direction);
 					var corridor = Instantiate(resourceCorridorPrefab, spawnPosition, targetRotation, parentTransform);
 					corridor.SetCorridorSize(new Vector3(corridorCrossSection.x, corridorCrossSection.y, scale));
+					var cameraScale = Vector3.Distance(originPosition, spokePosition) - (poiCameraClearanceRadius*2);
+					corridor.SetCameraSize(new Vector3(corridorCrossSection.x, corridorCrossSection.y, cameraScale));
 					poiCorridors.Add(corridor);
 				}
 			}
