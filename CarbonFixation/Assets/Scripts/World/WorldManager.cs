@@ -1,4 +1,5 @@
 ﻿using System;
+using Cameras;
 using Locomotion;
 using ScriptableObjects;
 using UnityEngine;
@@ -13,11 +14,15 @@ namespace World
 		[SerializeField] private PlayerCharacterController playerCharacterController;
 		[SerializeField] private Transform startingCameraRig;
 		[SerializeField] private ResourceItemsSO resourceItems;
+		[SerializeField] private float updateClosestCameraRig = 0.5f;
+		private float cameraRigUpdateTimer = 0f;
 
 		private System.Random worldGenRng;
+		private bool setNearestCameraRigDirty = true;
 
 		private void Start()
 		{
+			CameraManager.singleton.SetPlayerLookAtTarget(playerCharacterController.transform);
 			worldGenRng = new System.Random(DateTime.Now.GetHashCode());
 			terrainManager.ClearTerrains();
 			terrainManager.LoadTerrains();
@@ -25,6 +30,19 @@ namespace World
 			poiGenerator.GeneratePois(playerStartPosition, worldGenRng);
 			SetPlayerOnTerrain();
 			startingCameraRig.position = playerCharacterController.transform.position;
+		}
+
+		private void Update()
+		{
+			CameraRigUpdate();
+		}
+
+		private void CameraRigUpdate()
+		{
+			cameraRigUpdateTimer -= Time.deltaTime;
+			if (cameraRigUpdateTimer > 0) return;
+			CameraManager.singleton.SetNearestCameraRigFocus(playerCharacterController.transform.position);
+			cameraRigUpdateTimer += updateClosestCameraRig;
 		}
 
 		public void SetPlayerOnTerrain()
