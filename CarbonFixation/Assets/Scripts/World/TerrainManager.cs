@@ -27,7 +27,6 @@ namespace World
 					var worldPosition = new Vector3(x*terrainGeneratorPrefab.width, 0, z*terrainGeneratorPrefab.width) + loadPositionOffset;
 					var newTerrainGen = Instantiate(terrainGeneratorPrefab, worldPosition,  Quaternion.identity, terrainParent);
 					newTerrainGen.Generate();
-					// Todo: An error in the terrain indexing is causing lookup bugs later on
 					var terrainIndex = WorldToTerrainIndex(worldPosition);
 					newTerrainGen.SetWorldIndex(terrainIndex);
 					newTerrainGen.gameObject.name = $"TerrainGen ({terrainIndex.x},{terrainIndex.y})";

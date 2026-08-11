@@ -135,6 +135,26 @@ MonoBehaviour:
     filters: []
   beachHeight: 1
   seed: 12075.0205
-  prefabs: []
+  prefabs:
+  - prefab: {fileID: 8416417021142494653, guid: 30747fda471f1da4a957166307f978fe, type: 3}
+    count: 200
+    minSpacing: 0.001
+    sizeRange: {x: 0.8, y: 1.2}
+    heightRange: {x: 0.8, y: 1.2}
+  - prefab: {fileID: 6434731339945888754, guid: db209d155e6ceed4f8c32e7f21bdfba4, type: 3}
+    count: 10
+    minSpacing: 0.001
+    sizeRange: {x: 0.8, y: 1.2}
+    heightRange: {x: 0.8, y: 1.2}
+  - prefab: {fileID: 4044961651569186097, guid: ac0c20556a49afd4187210c441994cc8, type: 3}
+    count: 5
+    minSpacing: 0.001
+    sizeRange: {x: 0.8, y: 1.2}
+    heightRange: {x: 0.8, y: 1.2}
+  - prefab: {fileID: 1585202971843480972, guid: 6461490df043d674daf52e376c3d72dd, type: 3}
+    count: 500
+    minSpacing: 0.001
+    sizeRange: {x: 0.8, y: 1.2}
+    heightRange: {x: 0.8, y: 1.2}
   detailTextures: []
   spawnPrefabs: 1
