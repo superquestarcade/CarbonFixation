@@ -25,7 +25,7 @@ public class TRN_Generator : MonoBehaviour
 
     [SerializeField] private TRNTerrainObject[] prefabs;
     [SerializeField] private TRNDetaiTexture[] detailTextures;
-    [HideInInspector] public bool spawnPrefabs = true;
+    [SerializeField] public bool spawnPrefabs = true;
 
     private Vector2Int worldIndex = new Vector2Int(0, 0);
     public Vector2Int WorldIndex => worldIndex;
@@ -174,6 +174,7 @@ public class TRN_Generator : MonoBehaviour
 
     public void SpawnTrees()
     {
+        System.Random rng = new System.Random(gameObject.name.GetHashCode());
         terrain = GetComponent<Terrain>();
 
         List<TreeInstance> trees = new List<TreeInstance>();
@@ -190,21 +191,39 @@ public class TRN_Generator : MonoBehaviour
         for (int i = 0; i < prefabs.Length; i++)
         {
             TreeInstance tree = new TreeInstance();
-            for (int x = 0; x < width; x++)
+            var scatterPoints = ClumpedScatter.Generate(prefabs[i].count, rng, noiseScale: 5, minDistance: prefabs[i].minSpacing,
+                clumpiness: 6);
+            Debug.Log($"[{gameObject.name}].TRN_Generator.SpawnTrees scatterPoints: {scatterPoints.Count}");
+
+            foreach (var point in scatterPoints)
+            {
+                SampleHeight(point, out var _height, out var _worldHeight, out var _normHeight);
+                tree.position = new Vector3(point.x, _normHeight, point.y);
+                tree.rotation = (float) rng.NextDouble() * Mathf.Deg2Rad * 359f;
+                tree.heightScale = (TRNGen_Heightmap.random(new Vector2(point.y + seed, point.x + seed)) * (prefabs[i].sizeRange.y - prefabs[i].sizeRange.x)) + prefabs[i].sizeRange.x;
+                tree.widthScale = tree.heightScale;
+
+                tree.prototypeIndex = i;
+                trees.Add(tree);
+            }
+            
+            /*for (int x = 0; x < width; x++)
             {
                 for (int z = 0; z < width; z++)
                 {
-                    if (x % prefabs[i].spacing == 0 && z % prefabs[i].spacing == 0)
+                    if (x % prefabs[i].count == 0 && z % prefabs[i].count == 0)
                     {
                         float xOffset = (TRNGen_Heightmap.random(new Vector2(z + seed * i, x + seed * i)) * 2) - 1;
                         float zOffset = (TRNGen_Heightmap.random(new Vector2(x + seed * i, z + seed * i)) * 2) - 1;
 
-                        Vector2 offset = (new Vector2(xOffset, zOffset) * (prefabs[i].spacing / 2));
+                        Vector2 offset = (new Vector2(xOffset, zOffset) * (prefabs[i].count / 2));
 
                         float _x = (float)(x + offset.x) / width;
                         float _z = (float)(z + offset.y) / width;
 
-                        float _y = terrain.terrainData.GetHeight((int)(_x * terrain.terrainData.heightmapResolution), (int)(_z * terrain.terrainData.heightmapResolution)) / (float)height;
+                        // float _y = terrain.terrainData.GetHeight((int)(_x * terrain.terrainData.heightmapResolution), (int)(_z * terrain.terrainData.heightmapResolution)) / (float)height;
+                        SampleHeight(new Vector2(_x, _z), out var _y, out var _worldHeight,
+                            out var _normHeight);
                         float grad = terrain.terrainData.GetSteepness(_x, _z);
 
                         tree.position = new Vector3(_x, _y, _z);
@@ -219,13 +238,14 @@ public class TRN_Generator : MonoBehaviour
                         }
                     }
                 }
-            }
+            }*/
         }
 
+        Debug.Log($"[{gameObject.name}].TRN_Generator.SpawnTrees {trees.Count}");
         terrain.terrainData.treeInstances = trees.ToArray();
 
-        terrain.terrainData.size = new Vector3(width - 1, height, width);
-        terrain.terrainData.size = new Vector3(width, height, width);
+        /*terrain.terrainData.size = new Vector3(width - 1, height, width);
+        terrain.terrainData.size = new Vector3(width, height, width);*/
     }
 
     public Vector3 DetailToWorld(int x, int y)
@@ -426,7 +446,8 @@ public class NoiseFilter
 public struct TRNTerrainObject
 {
     public GameObject prefab;
-    public int spacing;
+    public int count;
+    [Range(0,1)] public float minSpacing;
     public Vector2 sizeRange;
     public Vector2 heightRange;
 }
