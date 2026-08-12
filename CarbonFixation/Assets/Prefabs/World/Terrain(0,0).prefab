@@ -134,7 +134,7 @@ MonoBehaviour:
     weight: 0.5
     filters: []
   beachHeight: 1
-  seed: 12075.0205
+  seed: 2026
   prefabs:
   - prefab: {fileID: 8416417021142494653, guid: 30747fda471f1da4a957166307f978fe, type: 3}
     count: 200

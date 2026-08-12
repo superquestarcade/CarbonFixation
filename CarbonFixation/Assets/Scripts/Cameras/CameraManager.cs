@@ -6,6 +6,7 @@ namespace Cameras
 	public class CameraManager : MonoBehaviourSingleton<CameraManager>
 	{
 		private Transform playerLookAtTarget;
+		public Transform PlayerLookAtTarget => playerLookAtTarget;
 		private List<CameraRig> cameraRigs = new();
 
 		public void RegisterCameraRig(CameraRig _cameraRig)
@@ -21,7 +22,8 @@ namespace Cameras
 
 		public void SetNearestCameraRigFocus(Vector3 _position)
 		{
-			Debug.Log($"CameraManager.SetNearestCameraRigFocus position: {_position}, rigs: {cameraRigs.Count}");
+			// Debug.Log($"CameraManager.SetNearestCameraRigFocus position: {_position}, rigs: {cameraRigs.Count}");
+			if(cameraRigs.Count == 0) return;
 			var nearestRig = cameraRigs[0];
 			foreach (var cameraRig in cameraRigs)
 			{

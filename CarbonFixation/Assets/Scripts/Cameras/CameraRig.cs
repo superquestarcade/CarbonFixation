@@ -14,6 +14,10 @@ namespace Cameras
 		[SerializeField] private CinemachineSplineDolly cSplineDolly;
 		[SerializeField] private SplineContainer cSpline;
 		[SerializeField] private float splineKnotHeight = 5f;
+		
+		[SerializeField] private float behindDistance = 3f;
+		[SerializeField] private float smoothSpeed = 5f;
+		private float currentZOffset;
 
 		private List<Vector3> debugSplineAdjustedPoints = new();
 		private List<Vector3> debugSplineWorldPoints = new();
@@ -22,6 +26,11 @@ namespace Cameras
 		{
 			CameraManager.singleton.RegisterCameraRig(this);
 			closestSplinePoint = transform.position;
+		}
+
+		private void Update()
+		{
+			UpdateOffsetDirection();
 		}
 
 		private void OnDestroy()
@@ -108,6 +117,40 @@ namespace Cameras
 			// Debug.DrawLine(_position, closestPoint, Color.chocolate, 10f);
 			closestSplinePoint = closestPoint;
 			return closestPoint;
+		}
+		
+		private void UpdateOffsetDirection()
+		{
+			// Only moving cameras should do this check
+			if (!cSplineDolly.AutomaticDolly.Enabled) return;
+			// Convert CameraPosition to a normalized 0-1 t regardless of PositionUnits setting
+	        float normalizedT = GetNormalizedT(cSpline.Spline);
+
+	        cSpline.Spline.Evaluate(normalizedT, out float3 pos, out float3 tangent, out float3 up);
+	        Vector3 splineTangent = ((Vector3)tangent).normalized;
+
+	        // Use velocity if you have a rigidbody/characterController, otherwise transform.forward
+	        Vector3 travelDir = CameraManager.singleton.PlayerLookAtTarget.forward;
+
+	        float dot = Vector3.Dot(travelDir.normalized, splineTangent);
+
+	        // Moving with spline tangent -> pull camera back (negative Z)
+	        // Moving against spline tangent -> push camera forward (positive Z)
+	        float targetZOffset = dot >= 0f ? -behindDistance : behindDistance;
+
+	        currentZOffset = Mathf.Lerp(currentZOffset, targetZOffset, Time.deltaTime * smoothSpeed);
+
+	        Vector3 offset = cSplineDolly.SplineOffset;
+	        offset.x = currentZOffset;
+	        cSplineDolly.SplineOffset = offset;
+		}
+		
+		private float GetNormalizedT(Spline spline)
+		{
+			if (cSplineDolly.PositionUnits == PathIndexUnit.Normalized)
+				return cSplineDolly.CameraPosition;
+
+			return SplineUtility.GetNormalizedInterpolation(spline, cSplineDolly.CameraPosition, cSplineDolly.PositionUnits);
 		}
 
 		private void OnDrawGizmosSelected()
