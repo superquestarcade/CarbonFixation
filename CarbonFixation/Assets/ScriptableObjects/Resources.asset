@@ -14,4 +14,3 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ScriptableObjects.ResourceItemsSO
   resources:
   - {fileID: 8007267834839478461, guid: 6c54cf0f90933df44a975dce548bbdf8, type: 3}
-  - {fileID: 7514136686416057696, guid: 6891935ea4abd5a4c8c967321d9eb468, type: 3}
