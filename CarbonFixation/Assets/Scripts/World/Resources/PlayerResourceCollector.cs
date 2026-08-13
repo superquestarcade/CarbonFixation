@@ -1,4 +1,5 @@
 ﻿using System;
+using Locomotion;
 using UnityEngine;
 
 namespace World.Resources
@@ -8,6 +9,8 @@ namespace World.Resources
 		[SerializeField] private Vector3 offset;
 		[SerializeField] private float radius = 0.25f;
 		[SerializeField] private LayerMask layerMask;
+		[SerializeField] private PlayerHealth playerHealth;
+		[SerializeField] private float regenHealth = 10f;
 
 		private void FixedUpdate()
 		{
@@ -22,6 +25,7 @@ namespace World.Resources
 				foreach (var hit in hits)
 				{
 					var resourceItem = hit.GetComponent<ResourceItem>();
+					playerHealth.AddRegenHealth(regenHealth);
 					if (resourceItem != null) Destroy(resourceItem.gameObject);
 				}
 			}

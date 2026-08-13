@@ -2,6 +2,7 @@
 {
 	public enum InputState
 	{
+		Inactive,
 		Ui,
 		Player,
 		Vehicle,

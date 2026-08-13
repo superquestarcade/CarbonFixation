@@ -1,9 +1,14 @@
 ﻿using System;
 using Cameras;
+using Cysharp.Threading.Tasks;
+using Data.Enums;
+using Input;
 using Locomotion;
 using ScriptableObjects;
 using UnityEngine;
+using Utility;
 using World.Resources;
+using Random = UnityEngine.Random;
 
 namespace World
 {
@@ -47,7 +52,7 @@ namespace World
 		public void SetPlayerOnTerrain()
 		{
 			var playerWorldPosition = playerCharacterController.transform.position;
-			var worldHeight = GetHeightAtWorldPosition(playerWorldPosition);
+			var worldHeight = GetHeightAtWorldPosition(playerWorldPosition) + 0.2f;
 			var positionOnTerrain = new Vector3(0, worldHeight, 0);
 			if (Application.isEditor && !Application.isPlaying)
 			{
@@ -82,6 +87,16 @@ namespace World
 		public ResourceItem GetRandomResourceItem(System.Random _rng)
 		{
 			return resourceItems.GetRandomResourceItem(_rng);
+		}
+
+		public async UniTask PlayerDeath()
+		{
+			InputManager.singleton.SetInputState(InputState.Inactive);
+			await ScreenFadeSystem.FadeAsync(ScreenFadeSystem.State.OPAQUE, 1f);
+			SetPlayerOnTerrain();
+			playerCharacterController.GetComponent<PlayerHealth>().ResetHealth();
+			await ScreenFadeSystem.FadeAsync(ScreenFadeSystem.State.CLEAR, 1f);
+			InputManager.singleton.SetInputState(InputState.Player);
 		}
 	}
 }

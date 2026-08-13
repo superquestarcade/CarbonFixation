@@ -13,6 +13,11 @@ namespace Input
 		[SerializeField] private PlayerCharacterInput playerCharacterInput;
 		private InputState inputState = InputState.Player;
 
+		private void Start()
+		{
+			SetInputState(InputState.Player);
+		}
+
 		#region Input Registration
 		/*public void RegisterInput(InputReceiver _inputReceiver, bool _setAsActiveState = false)
 		{
@@ -229,6 +234,10 @@ namespace Input
 				case InputState.Focus:
 					playerInput.SwitchCurrentActionMap("UI");
 					SetCursorVisible(true);
+					break;
+				case InputState.Inactive:
+					playerInput.SwitchCurrentActionMap("UI");
+					SetCursorVisible(false);
 					break;
 				default:
 					throw new ArgumentOutOfRangeException(nameof(_inputState), _inputState, null);

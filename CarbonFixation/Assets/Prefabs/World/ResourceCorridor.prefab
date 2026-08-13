@@ -106,8 +106,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::World.ResourceCorridor
   debugLevel: 0
   boxCollider: {fileID: 540103363408554497}
-  minResources: 15
-  maxResources: 30
+  minResources: 10
+  maxResources: 20
   OnSetCameraSize:
     m_PersistentCalls:
       m_Calls: []

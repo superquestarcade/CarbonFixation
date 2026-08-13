@@ -33,7 +33,7 @@ namespace Animation
 		public void Kneel(bool _isKneeling)
 		{
 			isKneeling = _isKneeling;
-			InputManager.singleton.SetInputState(isKneeling?InputState.Focus:InputState.Player);
+			InputManager.singleton.SetInputState(isKneeling?InputState.Inactive:InputState.Player);
 			animator.SetBool(kneelParamName, isKneeling);
 		}
 	}
